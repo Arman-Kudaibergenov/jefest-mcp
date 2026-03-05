@@ -1,15 +1,247 @@
+﻿# Jefest Project Registry
+# All projects in C:\Users\Arman\workspace\
+
+# MCP server endpoints (referenced by profiles and projects)
+mcp_endpoints:
+  rlm-toolkit:
+    type: http
+    url: "http://<server-ip>:8200/mcp"
+  1c-help:
+    type: http
+    url: "http://<server-ip>:8003/mcp"
+  1c-ssl:
+    type: http
+    url: "http://<server-ip>:8008/mcp"
+  1c-templates:
+    type: http
+    url: "http://<server-ip>:8004/mcp"
+  1c-syntax-checker:
+    type: http
+    url: "http://<server-ip>:8002/mcp"
+  1c-code-checker:
+    type: http
+    url: "http://<server-ip>:8007/mcp"
+  1c-forms:
+    type: http
+    url: "http://<server-ip>:8011/mcp"
+  playwright:
+    type: http
+    url: "http://<server-ip>:8010/mcp"
+  1c-ai-debug:
+    type: http
+    url: "http://<server-ip>:8020/mcp"
+  mcp-router:
+    type: http
+    url: "http://<server-ip>:8300/mcp"
+  1c-codemetadata-kaf:
+    type: http
+    url: "http://<server-ip>:7540/mcp"
+  arqa-testmwwg4-local:
+    type: http
+    url: "http://<server-ip>:9001/mcp/"
+  arqa-testmwwg4-cloud:
+    type: http
+    url: "http://<server-ip>:9101/mcp/"
+
+# Task profiles: which MCP servers to load for each task type
+mcp_profiles:
+  bsl-coding:
+    description: "BSL code writing/editing"
+    servers: [rlm-toolkit, 1c-help, 1c-templates, 1c-syntax-checker, 1c-code-checker]
+  form-edit:
+    description: "Form.xml editing"
+    servers: [rlm-toolkit, 1c-forms, 1c-syntax-checker]
+  ui-test:
+    description: "Playwright UI testing"
+    servers: [rlm-toolkit, playwright, 1c-ai-debug]
+  code-search:
+    description: "Code search and analysis"
+    servers: [rlm-toolkit, 1c-codemetadata-kaf]
+  data-ops:
+    description: "Database operations via AI Debug"
+    servers: [rlm-toolkit, 1c-ai-debug]
+  full-1c:
+    description: "All 1C tools (for complex tasks)"
+    servers: [rlm-toolkit, 1c-help, 1c-ssl, 1c-templates, 1c-syntax-checker, 1c-code-checker, 1c-forms]
+  minimal:
+    description: "Only RLM (for non-1C tasks)"
+    servers: [rlm-toolkit]
+
+# Platform version в†’ 1C server port mapping (CT107: <server-ip>)
+platform_servers:
+  "8.3.24":
+    port: 1641
+    web_port: 8081
+    host: "<server-ip>"
+  "8.3.25":
+    port: 1541
+    web_port: 8080
+    host: "<server-ip>"
+  "8.3.27":
+    port: 1741
+    web_port: 8082
+    host: "<server-ip>"
+
 projects:
-  my-webapp:
-    path: /workspace/my-webapp
-    type: nodejs
-    role: Web application
-    default_skills:
-      - api-expert
-      - testing-patterns
-  my-api:
-    path: /workspace/my-api
-    type: python
-    role: Backend API
-    default_skills:
-      - python-patterns
-      - postgres-expert
+  # === PRODUCTION (1C configurations) ===
+
+  forte:
+    path: /workspace/1c\Forte
+    type: 1c-configuration
+    role: production
+    platform: "8.3.27"
+    server: "<server-ip>:1741"
+    web: "http://<server-ip>:8082/Forte/"
+    description: "Р›РёР·РёРЅРіРѕРІР°СЏ СЃРёСЃС‚РµРјР° Р¤РѕСЂС‚РµР›РёР·РёРЅРі. Р Р°СЃС€РёСЂРµРЅРёРµ."
+    codemetadata: null  # TODO: deploy
+    default_skills: [powershell-windows, code-review, testing-patterns]
+
+  kaf:
+    path: /workspace/1c\KAF
+    type: 1c-configuration
+    role: production
+    platform: "8.3.24"
+    server: "<server-ip>:1641"
+    web: "http://<server-ip>:8081/KAF/"
+    description: "РљР°Р·Р°С…СЃС‚Р°РЅСЃРєР°СЏ Р±СѓС…РіР°Р»С‚РµСЂРёСЏ KAF."
+    codemetadata: "http://<server-ip>:7540/mcp"
+    default_skills: [powershell-windows, code-review, testing-patterns]
+    fixtures:
+      - name: zup_aut
+        path: /workspace/1c\zup_aut
+        description: "Р”РµРјРѕ-Р±Р°Р·Р° Р—РЈРџ РґР»СЏ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ"
+
+  minimkg:
+    path: /workspace/1c\MinimKG_new
+    type: 1c-configuration
+    role: production
+    platform: "8.3.24"
+    description: "РРЅС‚РµРіСЂР°С†РёСЏ 1РЎ СЃ СЃР°Р№С‚РѕРј minim.kg (FTP/XML, СЂР°СЃС€РёСЂРµРЅРёРµ Minim)."
+    codemetadata: null  # TODO: deploy
+    default_skills: [powershell-windows, code-review, testing-patterns]
+
+  akk:
+    path: /workspace/1c\AKK
+    type: 1c-configuration
+    role: production
+    platform: "8.3.24"
+    server: "<server-ip>:1641"
+    web: "http://<server-ip>:8081/AKK/"
+    description: "РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ AKK (РђРіСЂР°СЂРЅР°СЏ РљСЂРµРґРёС‚РЅР°СЏ РљРѕСЂРїРѕСЂР°С†РёСЏ)."
+    codemetadata: "http://<server-ip>:7580/mcp"
+    default_skills: [powershell-windows, code-review, testing-patterns]
+
+  sary-arqa:
+    path: /workspace/1c\Sary-Arqa
+    type: 1c-configuration
+    role: production
+    platform: "8.3.24"
+    server: "<server-ip>:1641"
+    web: "http://<server-ip>:8081/SaryArqa/"
+    description: "Sary-Arqa вЂ” РєР»РёРµРЅС‚СЃРєР°СЏ Р±Р°Р·Р°. РџР»Р°С‚С„РѕСЂРјР° 8.3.24."
+    codemetadata: "http://<server-ip>:7600/mcp"
+    default_skills: [powershell-windows, code-review, testing-patterns]
+
+
+  arqa:
+    path: /workspace/1c\ARCA
+    type: 1c-configuration
+    role: production
+    platform: "8.3.24"
+    server: "<server-ip>:1641"
+    web: "http://<server-ip>:8081/ARCA/"
+    description: "ARQA СЃС‚Р°СЂС‚Р°Рї вЂ” AI-Р°РЅР°Р»РёС‚РёРєР° РґР°РЅРЅС‹С… РґР»СЏ 1РЎ. MCP-СЂР°СЃС€РёСЂРµРЅРёРµ РІРЅСѓС‚СЂРё Р±Р°Р·С‹."
+    codemetadata: "http://<server-ip>:7570/mcp"
+    default_skills: [powershell-windows, code-review, testing-patterns, api-expert]
+    cloud_bases:
+      - name: testmwwg4
+        url: "https://1cstart.itsheff.cloud/testmwwg4"
+        proxy: "http://<server-ip>:9101/mcp/"
+        description: "РўРµСЃС‚РѕРІР°СЏ РѕР±Р»Р°С‡РЅР°СЏ Р±Р°Р·Р° (ITSheff). Haiku РґРµР»Р°РµС‚ С‚РµСЃС‚РѕРІС‹Рµ MCP-Р·Р°РїСЂРѕСЃС‹."
+      - name: bukhgalterqwbwv
+        url: "https://1cstart.itsheff.cloud/bukhgalterqwbwv"
+        description: "Р’С‚РѕСЂР°СЏ С‚РµСЃС‚РѕРІР°СЏ РѕР±Р»Р°С‡РЅР°СЏ Р±Р°Р·Р° (ITSheff)."
+
+  # === PRIVATE TOOLS ===
+
+  1c-ai-workspace:
+    path: /workspace/ai\1c-AI-workspace
+    type: tool
+    role: tool
+    description: "Hub: 74 СЃРєРёР»Р»Р°, 30 docs, С€Р°Р±Р»РѕРЅС‹ РїСЂРѕРµРєС‚РѕРІ. РСЃС‚РѕС‡РЅРёРє РґР»СЏ РІСЃРµС… 1РЎ РїСЂРѕРµРєС‚РѕРІ."
+    public_mirror: 1c-ai-development-kit
+    default_skills: [python-patterns, docker-expert, testing-patterns]
+
+  1c-ai-debug-extension:
+    path: /workspace/ai\1c-ai-debug-extension
+    type: tool
+    role: tool
+    targets: [kaf, forte, minimkg, akk, arqa]
+    description: "РћС‚Р»Р°РґРєР°, С‚РµСЃС‚РёСЂРѕРІР°РЅРёРµ (СЋРЅРёС‚С‹, СЃРєСЂРёРїС‚С‹, Playwright), MCP-РјРѕСЃС‚ Рє 1РЎ. РќР• СЂР°Р±РѕС‡Р°СЏ Р±Р°Р·Р°."
+    default_skills: [python-patterns, docker-expert, testing-patterns]
+
+  1c-enhanced-codemetadata:
+    path: /workspace/ai\1c-enhanced-codemetadata
+    type: tool
+    role: tool
+    targets: [kaf, forte, minimkg, akk, arqa]
+    description: "MCP-СЃРµСЂРІРµСЂ: SQLite+ChromaDB РёРЅРґРµРєСЃ РєРѕРґР°. Р’ СЃС‚Р°РґРёРё РѕС‚Р»Р°РґРєРё."
+    public_mirror: bsl-atlas
+    default_skills: [python-patterns, docker-expert, testing-patterns]
+
+  rlm:
+    path: /workspace/RLM
+    type: tool
+    role: tool
+    description: "Persistent memory framework (RLM-Toolkit). CT105, <server-ip>:8200."
+    default_skills: [python-patterns, testing-patterns]
+
+  # === PUBLIC MIRRORS ===
+
+  1c-ai-development-kit:
+    path: /workspace/public\1c-ai-development-kit
+    type: mirror
+    role: mirror
+    mirror_of: 1c-ai-workspace
+    description: "РџСѓР±Р»РёС‡РЅР°СЏ РІРµСЂСЃРёСЏ 1c-AI-workspace (GitHub)."
+    default_skills: [python-patterns, code-review]
+
+  bsl-atlas:
+    path: /workspace/public\bsl-atlas
+    type: mirror
+    role: mirror
+    mirror_of: 1c-enhanced-codemetadata
+    description: "РџСѓР±Р»РёС‡РЅР°СЏ РІРµСЂСЃРёСЏ codemetadata (GitHub + Docker Hub)."
+    default_skills: [python-patterns, code-review]
+
+  # === INFRASTRUCTURE ===
+
+  home-infrastructure:
+    path: /workspace/Home_Infrastructure
+    type: infrastructure
+    role: docs
+    description: "Р”РѕРєСѓРјРµРЅС‚Р°С†РёСЏ Proxmox, CT100-107, РєРѕРЅС„РёРіРё СЃРµСЂРІРµСЂРѕРІ."
+    default_skills: [docker-expert, workflow-automation]
+
+  architecture:
+    path: /workspace/РђСЂС…РёС‚РµРєС‚СѓСЂР°
+    type: infrastructure
+    role: archive
+    description: "РђСЂС…РёС‚РµРєС‚СѓСЂРЅС‹Рµ РґРѕРєРё, СЃС…РµРјС‹ Р‘Р”. РСЃС‚РѕСЂРёС‡РµСЃРєРёР№ Р°СЂС…РёРІ."
+    default_skills: [docker-expert, workflow-automation]
+
+  # === INACTIVE ===
+
+  ai-token-audit:
+    path: /workspace/AI-Token-Audit
+    type: research
+    role: inactive
+    description: "РђСѓРґРёС‚ С‚РѕРєРµРЅРѕРІ AI. РќРµР°РєС‚РёРІРµРЅ."
+    default_skills: []
+
+  mcp-router:
+    path: /workspace/ai\mcp-router
+    type: tool
+    role: tool
+    description: "MCP Router вЂ” SSE/streamable-http РїСЂРѕРєСЃРё РґР»СЏ Р°РіСЂРµРіР°С†РёРё MCP СЃРµСЂРІРµСЂРѕРІ. CT104:8300."
+    default_skills: [python-patterns, docker-expert, testing-patterns]

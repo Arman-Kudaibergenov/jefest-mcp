@@ -1,0 +1,19 @@
+name: CI
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - run: python -c "from jefest.server import create_server; print('Import OK')"
+      - run: python -m py_compile jefest/server.py
+      - run: python -m py_compile jefest/config.py
+      - run: python -m py_compile jefest/models.py
