@@ -25,14 +25,14 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Copy node, npm, claude from builder
+# Copy node, npm from builder (apt-installed)
 COPY --from=builder /usr/bin/node /usr/bin/node
 COPY --from=builder /usr/bin/npm /usr/bin/npm
-COPY --from=builder /usr/lib/node_modules /usr/lib/node_modules
-COPY --from=builder /usr/local/bin/claude /usr/local/bin/claude 2>/dev/null || true
-COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules 2>/dev/null || true
 
-# Copy Python packages from builder
+# Copy npm global packages (claude CLI installed via npm install -g)
+COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules
+
+# Copy Python packages from builder (includes uvicorn, mcp, etc.)
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
@@ -44,7 +44,7 @@ COPY supervisord.conf ./supervisord.conf
 COPY entrypoint.sh ./entrypoint.sh
 COPY VERSION ./VERSION
 
-RUN chmod +x ./entrypoint.sh
+RUN sed -i 's/\r$//' ./entrypoint.sh && chmod +x ./entrypoint.sh
 
 # Create required directories
 RUN mkdir -p /data /workspace

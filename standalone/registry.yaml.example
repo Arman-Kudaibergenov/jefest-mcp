@@ -1,0 +1,16 @@
+projects:
+  my-project:
+    path: /workspace/my-project
+    platform: python
+    role: production
+
+  another-project:
+    path: /workspace/another-project
+    platform: nodejs
+    role: development
+
+  legacy-app:
+    path: C:/Users/username/workspace/legacy-app
+    platform: 1c-8.3.24
+    server: localhost:1641
+    role: development
