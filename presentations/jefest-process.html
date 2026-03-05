@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jefest - Process Overview</title>
+<title>Jefest - Как AI пишет код для 15 проектов</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -99,7 +99,7 @@
     max-width: 1400px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 170px 1fr;
+    grid-template-columns: 190px 1fr;
     gap: 0 40px;
   }
   .main { min-width: 0; }
@@ -190,6 +190,7 @@
     margin-bottom: 20px;
     max-width: 800px;
   }
+  .desc strong { color: var(--text); }
   .desc code {
     font-family: var(--font-mono);
     font-size: 12px;
@@ -241,6 +242,14 @@
   }
   .roles-grid > * { min-width: 0; }
   @media (max-width: 768px) { .roles-grid { grid-template-columns: 1fr; } }
+
+  .three-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 900px) { .three-grid { grid-template-columns: 1fr; } }
 
   .role-list {
     list-style: none;
@@ -364,6 +373,7 @@
   .callout--orange { border-left-color: var(--orange); }
   .callout--red { border-left-color: var(--red); }
   .callout--green { border-left-color: var(--green); }
+  .callout--violet { border-left-color: var(--violet); }
 
   /* KPI */
   .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
@@ -377,26 +387,116 @@
   .kpi-card__value { font-size: 28px; font-weight: 700; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
   .kpi-card__label { font-family: var(--font-mono); font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); margin-top: 4px; }
 
-  /* COMMAND BLOCK */
-  .cmd-block {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    line-height: 1.6;
+  /* STEP INDICATOR */
+  .step-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 20px;
     overflow-x: auto;
-    margin-bottom: 16px;
-    color: var(--text);
+    padding-bottom: 4px;
   }
-  .cmd-block .dim { color: var(--text-dim); }
+  .step-flow__item {
+    flex: 1;
+    min-width: 140px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    position: relative;
+    text-align: center;
+  }
+  .step-flow__item:first-child { border-radius: 10px 0 0 10px; }
+  .step-flow__item:last-child { border-radius: 0 10px 10px 0; }
+  .step-flow__item + .step-flow__item { border-left: none; }
+  .step-flow__num {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .step-flow__text {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .step-flow__arrow {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: var(--text-dim);
+    padding: 0 2px;
+    flex-shrink: 0;
+  }
+
+  /* ANALOGY */
+  .analogy {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .analogy__icon {
+    font-size: 28px;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-dim);
+    border-radius: 10px;
+  }
+  .analogy__content { flex: 1; }
+  .analogy__title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .analogy__text { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+  /* COMPARISON */
+  .compare-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    font-size: 13px;
+  }
+  .compare-table th {
+    background: var(--surface2);
+    padding: 10px 16px;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table td:first-child { font-weight: 500; color: var(--text); }
 
   @media (max-width: 768px) {
     body { padding: 16px; }
     h1 { font-size: 24px; }
     .mermaid-wrap { padding: 16px 12px; }
-    .roles-grid { grid-template-columns: 1fr; }
+    .roles-grid, .three-grid { grid-template-columns: 1fr; }
+    .step-flow { flex-direction: column; }
+    .step-flow__item { border-radius: 0 !important; border-left: 1px solid var(--border) !important; }
+    .step-flow__item + .step-flow__item { border-top: none; }
+    .step-flow__arrow { transform: rotate(90deg); justify-content: center; }
   }
 </style>
 </head>
@@ -405,84 +505,173 @@
 <div class="wrap">
 
   <nav class="toc" id="toc">
-    <div class="toc-title">Процесс</div>
-    <a href="#s1">1. Роли</a>
-    <a href="#s2">2. Жизненный цикл</a>
-    <a href="#s3">3. Pipeline</a>
-    <a href="#s4">4. SDD</a>
-    <a href="#s5">5. Knowledge Bus</a>
-    <a href="#s6">6. Git Workflow</a>
-    <a href="#s7">7. Правила</a>
+    <div class="toc-title">Jefest</div>
+    <a href="#s0">Зачем это</a>
+    <a href="#s1">Проблема</a>
+    <a href="#s2">Два мозга</a>
+    <a href="#s3">Контракт (SDD)</a>
+    <a href="#s4">Как идёт задача</a>
+    <a href="#s5">Что внутри pipeline</a>
+    <a href="#s6">Память (RLM)</a>
+    <a href="#s7">Безопасность</a>
+    <a href="#s8">Git</a>
+    <a href="#s9">Правила</a>
   </nav>
 
   <div class="main">
 
-    <h1 class="animate" style="--i:0">Jefest Process</h1>
-    <p class="subtitle animate" style="--i:1">cross-project orchestrator &mdash; dispatch v3 &mdash; 2026-03-04</p>
+    <h1 class="animate" style="--i:0">Jefest</h1>
+    <p class="subtitle animate" style="--i:1">Как один AI управляет 15 проектами &mdash; без потери контроля</p>
 
     <div class="kpi-row animate-scale" style="--i:2">
       <div class="kpi-card">
-        <div class="kpi-card__value" style="color:var(--accent)">2</div>
-        <div class="kpi-card__label">Layers</div>
+        <div class="kpi-card__value" style="color:var(--accent)">15+</div>
+        <div class="kpi-card__label">Проектов</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-card__value" style="color:var(--orange)">3</div>
-        <div class="kpi-card__label">Validation</div>
+        <div class="kpi-card__value" style="color:var(--orange)">80+</div>
+        <div class="kpi-card__label">Skills</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-card__value" style="color:var(--green)">15+</div>
-        <div class="kpi-card__label">Projects</div>
+        <div class="kpi-card__value" style="color:var(--green)">3</div>
+        <div class="kpi-card__label">Модели AI</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-card__value" style="color:var(--violet)">1</div>
-        <div class="kpi-card__label">Entry Point</div>
+        <div class="kpi-card__label">Точка входа</div>
       </div>
     </div>
 
-    <!-- SECTION 1: ROLES -->
-    <div id="s1" class="sec-head animate" style="--i:3">1 &mdash; Роли</div>
+
+    <!-- SECTION 0: WHY -->
+    <div id="s0" class="sec-head animate" style="--i:3">Зачем это нужно</div>
 
     <p class="desc animate" style="--i:4">
-      Jefest работает в двухслойной модели. <code>Opus</code> &mdash; мозг: анализирует, планирует, пишет SDD, ревьюит результаты.
-      <code>Sonnet</code> &mdash; руки: получает SDD, выполняет конкретную работу, коммитит, пушит.
+      <strong>Vibe coding</strong> &mdash; это когда AI пишет код, а человек направляет.
+      Вы описываете задачу на обычном языке, AI реализует. Но что если проектов не один, а пятнадцать?
+      И каждый &mdash; со своей платформой, сервером, базой данных? Тут одного чата с AI уже недостаточно.
+    </p>
+
+    <p class="desc animate" style="--i:5">
+      <strong>Jefest</strong> &mdash; это оркестратор. Единая точка входа: вы говорите задачу, а система сама определяет в какой проект отправить, какую модель AI использовать, какие доменные знания подгрузить, и как проверить результат.
+    </p>
+
+    <div class="analogy animate" style="--i:6">
+      <div class="analogy__icon">&#127959;</div>
+      <div class="analogy__content">
+        <div class="analogy__title">Аналогия: стройка</div>
+        <div class="analogy__text">
+          Вы &mdash; заказчик. Jefest &mdash; прораб. Вы говорите "хочу второй этаж".
+          Прораб рисует чертёж, вызывает бригаду, проверяет их работу, принимает результат.
+          Вам не нужно знать как укладывать кирпич &mdash; для этого есть бригада.
+        </div>
+      </div>
+    </div>
+
+
+    <!-- SECTION 1: PROBLEM -->
+    <div id="s1" class="sec-head animate" style="--i:7">Проблема</div>
+
+    <p class="desc animate" style="--i:8">
+      Когда вы просите AI написать код в обычном чате &mdash; это работает для одного файла.
+      Но в реальных проектах возникают проблемы, которые чат не решает:
+    </p>
+
+    <div class="three-grid">
+      <div class="ve-card animate" style="--i:9">
+        <div class="ve-card__label" style="color:var(--red)">Потеря контекста</div>
+        <p style="font-size:13px;color:var(--text-dim)">
+          AI забывает всё после закрытия чата. Каждую сессию &mdash; объяснять заново: структуру проекта, решения, баги.
+        </p>
+      </div>
+      <div class="ve-card animate" style="--i:10">
+        <div class="ve-card__label" style="color:var(--red)">Нет контроля</div>
+        <p style="font-size:13px;color:var(--text-dim)">
+          AI может написать рабочий код, а может &mdash; сломать то, что работало. Без ревью вы узнаете об этом в продакшене.
+        </p>
+      </div>
+      <div class="ve-card animate" style="--i:11">
+        <div class="ve-card__label" style="color:var(--red)">Масштаб</div>
+        <p style="font-size:13px;color:var(--text-dim)">
+          15 проектов, каждый со своим стеком. Держать всё в голове (даже AI-шной) &mdash; невозможно.
+        </p>
+      </div>
+    </div>
+
+
+    <!-- SECTION 2: TWO BRAINS -->
+    <div id="s2" class="sec-head animate" style="--i:12">Два мозга</div>
+
+    <p class="desc animate" style="--i:13">
+      Jefest использует <strong>разделение труда</strong> между двумя моделями AI.
+      Это не два разных чат-бота &mdash; это два уровня одной системы, каждый делает то, в чём силён.
     </p>
 
     <div class="roles-grid">
-      <div class="ve-card ve-card--hero animate" style="--i:5">
-        <div class="ve-card__label" style="color:var(--accent)">Opus - Orchestrator</div>
+      <div class="ve-card ve-card--hero animate" style="--i:14">
+        <div class="ve-card__label" style="color:var(--accent)">Opus &mdash; Архитектор</div>
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:10px">
+          Самая умная модель. Думает, планирует, проверяет. <strong>Никогда не пишет код сам.</strong>
+        </p>
         <ul class="role-list">
-          <li>Анализ задачи, декомпозиция</li>
-          <li>Написание SDD спецификации</li>
-          <li>Выбор skills из каталога</li>
-          <li>Запуск <code>dispatch-lite.ps1</code></li>
-          <li>Code review результатов</li>
-          <li>Merge <code>master</code> &rarr; <code>main</code></li>
-          <li>RLM: чтение/запись контекста</li>
+          <li>Анализирует задачу, находит нужный проект</li>
+          <li>Пишет спецификацию (SDD) &mdash; что делать</li>
+          <li>Подбирает навыки (skills) для исполнителя</li>
+          <li>Запускает исполнителя</li>
+          <li>Ревьюит результат</li>
+          <li>Принимает или отправляет на доработку</li>
         </ul>
       </div>
-      <div class="ve-card ve-card--hero animate" style="--i:6">
-        <div class="ve-card__label" style="color:var(--orange)">Sonnet - Executor</div>
+      <div class="ve-card ve-card--hero animate" style="--i:15">
+        <div class="ve-card__label" style="color:var(--orange)">Sonnet &mdash; Исполнитель</div>
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:10px">
+          Быстрая модель. Читает спецификацию, выполняет шаг за шагом. <strong>Работает строго по контракту.</strong>
+        </p>
         <ul class="role-list">
-          <li>Читает SDD &mdash; это контракт</li>
-          <li>Создаёт worktree</li>
-          <li>Реализует Atomic Tasks</li>
-          <li>Коммит + push в gitea</li>
-          <li>Запускает verify-completion</li>
-          <li>Выполняет <code>/exit</code></li>
-          <li>Никогда не пушит в <code>main</code></li>
+          <li>Читает SDD &mdash; это его ТЗ</li>
+          <li>Создаёт изолированную ветку (worktree)</li>
+          <li>Пишет код, тестирует</li>
+          <li>Коммитит и пушит</li>
+          <li>Проходит автопроверку</li>
+          <li>Завершается и освобождает ресурсы</li>
         </ul>
       </div>
     </div>
 
-    <!-- SECTION 2: LIFECYCLE -->
-    <div id="s2" class="sec-head animate" style="--i:7">2 &mdash; Жизненный цикл задачи</div>
+    <div class="callout animate" style="--i:16">
+      <strong>Почему два, а не один?</strong> Opus &mdash; дорогой и медленный, но точный. Sonnet &mdash; дешёвый и быстрый.
+      Если Opus будет сам писать код &mdash; это как нанять главного инженера класть кирпич.
+      Разделение экономит деньги и повышает качество: каждый делает то, что умеет лучше.
+    </div>
 
-    <p class="desc animate" style="--i:8">
-      Пользователь даёт задачу в свободной форме. Opus определяет целевой проект из <code>registry.yaml</code>,
-      пишет SDD, валидирует через Haiku, запускает Sonnet. После завершения &mdash; ревью и merge.
+    <div class="callout callout--violet animate" style="--i:17">
+      <strong>А Haiku?</strong> Есть ещё третья модель &mdash; <code>Haiku</code>. Самая маленькая и дешёвая.
+      Она проверяет формальные вещи: правильно ли написана спецификация, выполнил ли исполнитель все пункты.
+      Как автоматический чеклист.
+    </div>
+
+
+    <!-- SECTION 3: SDD -->
+    <div id="s3" class="sec-head animate" style="--i:18">Контракт &mdash; SDD</div>
+
+    <p class="desc animate" style="--i:19">
+      <strong>SDD (Spec-Driven Development)</strong> &mdash; это контракт между архитектором и исполнителем.
+      Без него работа не начинается. Это не бюрократия &mdash; это защита от "AI что-то нагенерил, а что &mdash; непонятно".
     </p>
 
-    <div class="mermaid-wrap animate" style="--i:9">
+    <div class="analogy animate" style="--i:20">
+      <div class="analogy__icon">&#128220;</div>
+      <div class="analogy__content">
+        <div class="analogy__title">Аналогия: рецепт</div>
+        <div class="analogy__text">
+          SDD &mdash; это рецепт блюда. В нём написано: какие ингредиенты (файлы), какие шаги (Atomic Tasks),
+          как проверить что блюдо удалось (Acceptance), и что делать после (Finalize).
+          Повар (Sonnet) следует рецепту, а не импровизирует.
+        </div>
+      </div>
+    </div>
+
+    <div class="mermaid-wrap animate" style="--i:21">
       <div class="zoom-controls">
         <button onclick="zoomDiagram(this, 1.2)" title="Zoom in">+</button>
         <button onclick="zoomDiagram(this, 0.8)" title="Zoom out">&minus;</button>
@@ -490,55 +679,125 @@
       </div>
       <pre class="mermaid">
         graph TD
-          U["Пользователь"] --> O["Opus: анализ задачи"]
-          O --> R["registry.yaml: найти проект"]
-          R --> S["Opus: написать SDD"]
-          S --> V["Haiku: validate-sdd.ps1"]
-          V -->|PASS| D["dispatch-lite.ps1"]
-          V -->|FAIL| S
-          D --> SON["Sonnet: выполнение SDD"]
-          SON --> VC["Haiku: verify-completion.ps1"]
-          VC --> PE["dispatch-post-exit.ps1"]
+          A["Context<br/>Зачем эта задача"] --> B["Environment<br/>Проект, путь, навыки"]
+          B --> C["Approach<br/>Как решаем и почему"]
+          C --> D["Files<br/>Какие файлы трогаем"]
+          D --> E["Atomic Tasks<br/>Пошаговые действия"]
+          E --> F["Acceptance<br/>Как проверить успех"]
+          F --> G["Finalize<br/>Коммит, пуш, /exit"]
+
+          classDef section fill:#2563eb22,stroke:#2563eb,stroke-width:2px
+          class A,B,C,D,E,F,G section
+      </pre>
+    </div>
+
+    <table class="compare-table animate" style="--i:22">
+      <thead>
+        <tr><th>Секция SDD</th><th>Что там</th><th>Зачем</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Context</td><td>Описание проблемы</td><td>Чтобы исполнитель понимал <em>зачем</em></td></tr>
+        <tr><td>Environment</td><td>Проект, путь, skills</td><td>Чтобы работал в правильном месте</td></tr>
+        <tr><td>Atomic Tasks</td><td>Пошаговый план</td><td>Чтобы не придумывал отсебятину</td></tr>
+        <tr><td>Acceptance</td><td>Критерии приёмки</td><td>Чтобы можно было проверить</td></tr>
+        <tr><td>Finalize</td><td>Коммит, пуш, выход</td><td>Чтобы корректно завершился</td></tr>
+      </tbody>
+    </table>
+
+
+    <!-- SECTION 4: FLOW -->
+    <div id="s4" class="sec-head animate" style="--i:23">Как проходит задача</div>
+
+    <p class="desc animate" style="--i:24">
+      Весь процесс от "хочу фичу" до готового кода &mdash; в 6 шагов. Вы участвуете только в первом и последнем.
+    </p>
+
+    <div class="step-flow animate" style="--i:25">
+      <div class="step-flow__item">
+        <span class="step-flow__num" style="color:var(--green)">1</span>
+        <span class="step-flow__text">Вы говорите<br>задачу</span>
+      </div>
+      <div class="step-flow__arrow">&rarr;</div>
+      <div class="step-flow__item">
+        <span class="step-flow__num" style="color:var(--accent)">2</span>
+        <span class="step-flow__text">Opus пишет<br>SDD</span>
+      </div>
+      <div class="step-flow__arrow">&rarr;</div>
+      <div class="step-flow__item">
+        <span class="step-flow__num" style="color:var(--violet)">3</span>
+        <span class="step-flow__text">Haiku<br>проверяет SDD</span>
+      </div>
+      <div class="step-flow__arrow">&rarr;</div>
+      <div class="step-flow__item">
+        <span class="step-flow__num" style="color:var(--orange)">4</span>
+        <span class="step-flow__text">Sonnet<br>пишет код</span>
+      </div>
+      <div class="step-flow__arrow">&rarr;</div>
+      <div class="step-flow__item">
+        <span class="step-flow__num" style="color:var(--violet)">5</span>
+        <span class="step-flow__text">Haiku оценивает<br>результат</span>
+      </div>
+      <div class="step-flow__arrow">&rarr;</div>
+      <div class="step-flow__item">
+        <span class="step-flow__num" style="color:var(--accent)">6</span>
+        <span class="step-flow__text">Opus ревьюит,<br>мержит</span>
+      </div>
+    </div>
+
+    <div class="mermaid-wrap animate" style="--i:26">
+      <div class="zoom-controls">
+        <button onclick="zoomDiagram(this, 1.2)" title="Zoom in">+</button>
+        <button onclick="zoomDiagram(this, 0.8)" title="Zoom out">&minus;</button>
+        <button onclick="resetZoom(this)" title="Reset zoom">&#8634;</button>
+      </div>
+      <pre class="mermaid">
+        graph TD
+          U["Пользователь: задача"] --> O["Opus: анализ + registry"]
+          O --> S["Opus: пишет SDD"]
+          S --> V["Haiku: validate-sdd"]
+          V -->|"Ок"| D["dispatch-lite: запуск Sonnet"]
+          V -->|"Ошибка"| S
+          D --> SK["Skills инъекция"]
+          SK --> SON["Sonnet: код по SDD"]
+          SON --> VC["Haiku: оценка A/B/C/F"]
+          VC --> PE["RLM: сохранить результат"]
           PE --> REV["Opus: code review"]
-          REV -->|OK| M["Merge master -> main"]
-          REV -->|Issues| FIX["Новый SDD с фиксами"]
+          REV -->|"Принято"| M["Merge в main"]
+          REV -->|"Замечания"| FIX["Новый SDD с фиксами"]
           FIX --> V
 
+          classDef user fill:#05966922,stroke:#059669,stroke-width:2px
           classDef opus fill:#2563eb22,stroke:#2563eb,stroke-width:2px
           classDef sonnet fill:#d9770622,stroke:#d97706,stroke-width:2px
           classDef haiku fill:#7c3aed22,stroke:#7c3aed,stroke-width:2px
-          classDef user fill:#05966922,stroke:#059669,stroke-width:2px
+          classDef infra fill:#0891b222,stroke:#0891b2,stroke-width:2px
 
           class U user
           class O,S,REV,M,FIX opus
           class SON sonnet
-          class V,VC,PE haiku
-          class D,R opus
+          class V,VC haiku
+          class D,SK,PE infra
       </pre>
     </div>
 
-    <div class="legend animate" style="--i:10">
-      <div class="legend-item"><div class="legend-swatch" style="background:var(--accent)"></div> Opus</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:var(--orange)"></div> Sonnet</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:var(--violet)"></div> Haiku</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:var(--green)"></div> User</div>
+    <div class="legend animate" style="--i:27">
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--green)"></div> Пользователь</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--accent)"></div> Opus (архитектор)</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--orange)"></div> Sonnet (исполнитель)</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--violet)"></div> Haiku (валидатор)</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--cyan)"></div> Инфраструктура</div>
     </div>
 
-    <!-- SECTION 3: PIPELINE -->
-    <div id="s3" class="sec-head animate" style="--i:11">3 &mdash; Dispatch Pipeline</div>
 
-    <p class="desc animate" style="--i:12">
-      <code>dispatch-lite.ps1</code> &mdash; главный диспетчер. Принимает путь к проекту и SDD,
-      валидирует через Haiku, запускает Sonnet в новом терминале.
+    <!-- SECTION 5: PIPELINE -->
+    <div id="s5" class="sec-head animate" style="--i:28">Что внутри pipeline</div>
+
+    <p class="desc animate" style="--i:29">
+      Между "Opus написал SDD" и "Sonnet пишет код" происходит целый конвейер.
+      Это автоматика &mdash; человек её не видит, но она защищает от ошибок.
     </p>
 
-    <div class="cmd-block animate" style="--i:13">
-      <span class="dim"># Основная команда запуска</span><br>
-      powershell.exe -NoProfile -File scripts/dispatch-lite.ps1 \<br>
-      &nbsp;&nbsp;-ProjectPath "&lt;path&gt;" -SddPath "&lt;sdd.md&gt;" [-Model sonnet] [-Force]
-    </div>
-
-    <div class="mermaid-wrap animate" style="--i:14">
+    <div class="mermaid-wrap animate" style="--i:30">
       <div class="zoom-controls">
         <button onclick="zoomDiagram(this, 1.2)" title="Zoom in">+</button>
         <button onclick="zoomDiagram(this, 0.8)" title="Zoom out">&minus;</button>
@@ -546,101 +805,85 @@
       </div>
       <pre class="mermaid">
         graph LR
-          subgraph PRE["Pre-dispatch"]
-            A["validate-sdd.ps1"] --> B["Write marker + task file"]
-            B --> C["Read agent-system-prompt.md"]
+          subgraph PRE["&#128270; До запуска"]
+            A["validate-sdd<br/>Haiku проверяет SDD"] --> B["inject-learnings<br/>Известные ошибки"]
+            B --> C["Загрузка skills<br/>Доменные знания"]
           end
-          subgraph LAUNCH["Launch"]
-            D["Generate launcher.ps1"] --> E["wt new-tab + Sonnet"]
+          subgraph RUN["&#128296; Исполнение"]
+            D["Sonnet в отдельном<br/>окне терминала"] --> E["Worktree<br/>Изолированная ветка"]
+            E --> F["Atomic Tasks<br/>Шаг за шагом"]
+            F --> G["Commit + Push"]
           end
-          subgraph EXEC["Sonnet Execution"]
-            F["Read SDD"] --> G["Create worktree"]
-            G --> H["Atomic Tasks"]
-            H --> I["Commit + Push"]
-            I --> J["verify-completion.ps1"]
-            J --> K["Remove worktree"]
-            K --> L["/exit"]
-          end
-          subgraph POST["Post-exit"]
-            M["dispatch-post-exit.ps1"] --> N["Retro + RLM"]
+          subgraph POST["&#128202; После"]
+            H["verify-completion<br/>Haiku ставит оценку"] --> I["dispatch-post-exit<br/>Сохранение в RLM"]
           end
 
-          PRE --> LAUNCH --> EXEC --> POST
+          PRE --> RUN --> POST
 
-          classDef haiku fill:#7c3aed22,stroke:#7c3aed,stroke-width:2px
-          classDef launch fill:#2563eb22,stroke:#2563eb,stroke-width:2px
-          classDef exec fill:#d9770622,stroke:#d97706,stroke-width:2px
+          classDef pre fill:#7c3aed22,stroke:#7c3aed,stroke-width:2px
+          classDef run fill:#d9770622,stroke:#d97706,stroke-width:2px
           classDef post fill:#05966922,stroke:#059669,stroke-width:2px
 
-          class A,J haiku
-          class D,E launch
-          class F,G,H,I,K,L exec
-          class M,N post
+          class A,B,C pre
+          class D,E,F,G run
+          class H,I post
       </pre>
     </div>
 
-    <div class="callout animate" style="--i:15">
-      <strong>Haiku validation.</strong> <code>validate-sdd.ps1</code> проверяет SDD по 10 пунктам чеклиста:
-      Context, Environment, Atomic Tasks, worktree step, Acceptance, Finalize, commit+push, verify-completion, /exit, Files section.
-      Все 10 должны быть PASS.
-    </div>
-
-    <div class="callout callout--orange animate" style="--i:16">
-      <strong>TTY capture bug.</strong> При вызове <code>claude.exe</code> из другой Claude Code сессии stdout невидим.
-      Workaround: <code>&gt; file.log 2&gt;&amp;1</code> redirect или context-mode MCP.
-    </div>
-
-    <!-- SECTION 4: SDD -->
-    <div id="s4" class="sec-head animate" style="--i:17">4 &mdash; SDD Specification</div>
-
-    <p class="desc animate" style="--i:18">
-      SDD (Software Design Document) &mdash; контракт между Opus и Sonnet. Opus пишет, Haiku валидирует,
-      Sonnet исполняет. Шаблон: <code>templates/sdd-template.md</code>.
-    </p>
-
-    <div class="mermaid-wrap animate" style="--i:19">
-      <div class="zoom-controls">
-        <button onclick="zoomDiagram(this, 1.2)" title="Zoom in">+</button>
-        <button onclick="zoomDiagram(this, 0.8)" title="Zoom out">&minus;</button>
-        <button onclick="resetZoom(this)" title="Reset zoom">&#8634;</button>
+    <div class="roles-grid">
+      <div class="ve-card animate" style="--i:31">
+        <div class="ve-card__label" style="color:var(--violet)">Валидация SDD</div>
+        <ul class="role-list">
+          <li>Haiku проверяет 10+ пунктов чеклиста</li>
+          <li>Есть ли Context, Approach, Files?</li>
+          <li>Есть ли worktree, commit, push, /exit?</li>
+          <li>Правильно ли указан проект?</li>
+          <li>Подобраны ли skills?</li>
+          <li>Лежит ли SDD в правильной папке?</li>
+        </ul>
       </div>
-      <pre class="mermaid">
-        graph TD
-          A["## Context"] --> B["## Environment"]
-          B --> C["## Approach"]
-          C --> D["## Files"]
-          D --> E["## Atomic Tasks"]
-          E --> F["## Acceptance"]
-          F --> G["## Finalize"]
-
-          A -.- A1["Зачем эта задача"]
-          B -.- B1["Проект, путь, skills, RLM"]
-          E -.- E1["1. Worktree\n2. cd worktree\n3-N. Конкретные шаги"]
-          F -.- F1["Проверяемые условия"]
-          G -.- G1["Commit, push ALL remotes,\nmerge, verify, /exit"]
-
-          classDef section fill:#2563eb22,stroke:#2563eb,stroke-width:2px
-          classDef detail fill:#0891b222,stroke:#0891b2,stroke-width:1px
-
-          class A,B,C,D,E,F,G section
-          class A1,B1,E1,F1,G1 detail
-      </pre>
+      <div class="ve-card animate" style="--i:32">
+        <div class="ve-card__label" style="color:var(--green)">Оценка результата</div>
+        <ul class="role-list">
+          <li><span class="tag tag--green">A</span> Все задачи выполнены</li>
+          <li><span class="tag tag--blue">B</span> Почти всё, мелкие недочёты</li>
+          <li><span class="tag tag--orange">C</span> Существенные пропуски</li>
+          <li><span class="tag tag--red">F</span> Задача провалена</li>
+          <li>Оценка C/F &rarr; ошибки сохраняются в базу</li>
+          <li>При следующем запуске &mdash; inject-learnings подскажет</li>
+        </ul>
+      </div>
     </div>
 
-    <div class="callout callout--green animate" style="--i:20">
-      <strong>Git push pattern.</strong> SDD шаблон использует <code>for remote in $(git remote); do git push $remote branch; done</code>
-      вместо хардкода origin/gitea. Работает с любой конфигурацией remotes.
+    <div class="callout callout--green animate" style="--i:33">
+      <strong>Цикл обучения.</strong> Если Sonnet делает ошибку &mdash; она записывается. При следующем запуске
+      в том же проекте ему скажут "в прошлый раз была вот такая проблема, избегай".
+      Система учится на своих ошибках.
     </div>
 
-    <!-- SECTION 5: KNOWLEDGE BUS -->
-    <div id="s5" class="sec-head animate" style="--i:21">5 &mdash; Knowledge Bus</div>
 
-    <p class="desc animate" style="--i:22">
-      RLM (CT105) &mdash; шина коммуникации между сессиями. Opus пишет план/контекст, Sonnet читает.
-      После завершения &mdash; Sonnet пишет checkpoint, Opus читает результат.
+    <!-- SECTION 6: MEMORY -->
+    <div id="s6" class="sec-head animate" style="--i:34">Память &mdash; RLM</div>
+
+    <p class="desc animate" style="--i:35">
+      <strong>Главная проблема AI</strong> &mdash; он забывает всё при закрытии чата.
+      RLM (Retrieval-augmented Language Memory) решает это: факты, решения, прогресс сохраняются
+      на сервере и подгружаются в начале каждой сессии.
     </p>
 
-    <div class="mermaid-wrap animate" style="--i:23">
+    <div class="analogy animate" style="--i:36">
+      <div class="analogy__icon">&#129504;</div>
+      <div class="analogy__content">
+        <div class="analogy__title">Аналогия: записная книжка</div>
+        <div class="analogy__text">
+          Представьте, что у вас амнезия, но есть записная книжка. Перед каждым разговором вы её перечитываете.
+          RLM &mdash; это такая книжка для AI. Туда записываются решения, ошибки, прогресс.
+          При новой сессии AI сначала читает &mdash; потом работает.
+        </div>
+      </div>
+    </div>
+
+    <div class="mermaid-wrap animate" style="--i:37">
       <div class="zoom-controls">
         <button onclick="zoomDiagram(this, 1.2)" title="Zoom in">+</button>
         <button onclick="zoomDiagram(this, 0.8)" title="Zoom out">&minus;</button>
@@ -648,58 +891,114 @@
       </div>
       <pre class="mermaid">
         graph LR
-          subgraph OPUS["Opus Session"]
-            O1["Plan + Context"] --> W1["rlm_add_fact"]
-            R1["rlm_route_context"] --> O2["Review result"]
+          subgraph SESSION1["Сессия 1"]
+            A["Opus работает"] --> B["Сохраняет в RLM:<br/>прогресс, решения"]
           end
-          subgraph RLM["RLM (CT105:8200)"]
-            DB["Hierarchical Facts\nL0-L3, domains,\nsemantic search"]
+          subgraph RLM["RLM сервер"]
+            DB["Факты<br/>семантический поиск<br/>иерархия L0-L3"]
           end
-          subgraph SONNET["Sonnet Session"]
-            S1["rlm_route_context"] --> S2["Execute with context"]
-            S2 --> S3["rlm_add_fact: checkpoint"]
+          subgraph SESSION2["Сессия 2"]
+            C["Opus загружает<br/>контекст из RLM"] --> D["Продолжает<br/>с того же места"]
+          end
+          subgraph AGENT["Sonnet (агент)"]
+            E["Читает контекст"] --> F["Выполняет задачу"]
+            F --> G["Пишет результат"]
           end
 
-          W1 --> DB
-          DB --> S1
-          S3 --> DB
-          DB --> R1
+          B --> DB
+          DB --> C
+          DB --> E
+          G --> DB
 
           classDef opus fill:#2563eb22,stroke:#2563eb,stroke-width:2px
           classDef rlm fill:#7c3aed22,stroke:#7c3aed,stroke-width:2px
           classDef sonnet fill:#d9770622,stroke:#d97706,stroke-width:2px
 
-          class O1,W1,R1,O2 opus
+          class A,B,C,D opus
           class DB rlm
-          class S1,S2,S3 sonnet
+          class E,F,G sonnet
       </pre>
     </div>
 
     <div class="roles-grid">
-      <div class="ve-card animate" style="--i:24">
-        <div class="ve-card__label" style="color:var(--violet)">Knowledge Levels</div>
+      <div class="ve-card animate" style="--i:38">
+        <div class="ve-card__label" style="color:var(--violet)">Что сохраняется</div>
         <ul class="role-list">
-          <li><span class="tag tag--blue">L0</span> Global facts (always loaded)</li>
-          <li><span class="tag tag--green">L1</span> Domain facts (routed by query)</li>
-          <li><span class="tag tag--orange">L2</span> Module facts (specific context)</li>
-          <li><span class="tag tag--violet">L3</span> Granular details</li>
+          <li>Принятые решения и их причины</li>
+          <li>Какие задачи выполнены, какие нет</li>
+          <li>Ошибки при dispatch и их фиксы</li>
+          <li>Архитектурные паттерны проектов</li>
+          <li>Результаты code review</li>
         </ul>
       </div>
-      <div class="ve-card animate" style="--i:25">
-        <div class="ve-card__label" style="color:var(--cyan)">Knowledge Sources</div>
+      <div class="ve-card animate" style="--i:39">
+        <div class="ve-card__label" style="color:var(--cyan)">Как ищет</div>
         <ul class="role-list">
-          <li><code>RLM</code> facts: domain=workflow, project tags</li>
-          <li><code>MEMORY.md</code> per-project auto-memory</li>
-          <li><code>processes/learned.yaml</code> verified patterns</li>
-          <li><code>CLAUDE.md</code> project instructions</li>
+          <li><strong>Семантический поиск</strong> &mdash; по смыслу, не по словам</li>
+          <li><strong>По ключевым словам</strong> &mdash; точное совпадение</li>
+          <li><strong>По свежести</strong> &mdash; недавние факты важнее</li>
+          <li>Все три способа комбинируются</li>
+          <li>Автоочистка старых фактов</li>
         </ul>
       </div>
     </div>
 
-    <!-- SECTION 6: GIT -->
-    <div id="s6" class="sec-head animate" style="--i:26">6 &mdash; Git Workflow</div>
 
-    <div class="mermaid-wrap animate" style="--i:27">
+    <!-- SECTION 7: SAFETY -->
+    <div id="s7" class="sec-head animate" style="--i:40">Безопасность</div>
+
+    <p class="desc animate" style="--i:41">
+      AI может наломать дров. Jefest выстраивает несколько уровней защиты,
+      чтобы ошибка Sonnet не попала в продакшен.
+    </p>
+
+    <div class="three-grid">
+      <div class="ve-card animate" style="--i:42">
+        <div class="ve-card__label" style="color:var(--violet)">До выполнения</div>
+        <ul class="role-list">
+          <li>SDD валидация (Haiku)</li>
+          <li>Проверка что SDD в нужном проекте</li>
+          <li>Инъекция известных ошибок</li>
+          <li>Подгрузка доменных skills</li>
+        </ul>
+      </div>
+      <div class="ve-card animate" style="--i:43">
+        <div class="ve-card__label" style="color:var(--orange)">Во время</div>
+        <ul class="role-list">
+          <li>Изолированная ветка (worktree)</li>
+          <li>Sonnet не трогает <code>main</code></li>
+          <li>Работа в отдельном терминале</li>
+          <li>Guard от двойного запуска</li>
+        </ul>
+      </div>
+      <div class="ve-card animate" style="--i:44">
+        <div class="ve-card__label" style="color:var(--green)">После</div>
+        <ul class="role-list">
+          <li>Автооценка (Haiku, A/B/C/F)</li>
+          <li>Code review (Opus)</li>
+          <li>Merge в main только после ревью</li>
+          <li>Сохранение ошибок для обучения</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout animate" style="--i:45">
+      <strong>Worktree</strong> &mdash; это как песочница. Sonnet создаёт отдельную копию кода, работает в ней,
+      и только после проверки результат попадает в основную ветку.
+      Если что-то пошло не так &mdash; worktree удаляется, код не пострадал.
+    </div>
+
+
+    <!-- SECTION 8: GIT -->
+    <div id="s8" class="sec-head animate" style="--i:46">Git &mdash; ветки и ревью</div>
+
+    <p class="desc animate" style="--i:47">
+      Две ветки, чёткие правила. <code>main</code> &mdash; всегда рабочий код.
+      <code>master</code> &mdash; текущая работа. Sonnet пушит только в <code>master</code>,
+      а в <code>main</code> мержит только Opus после ревью.
+    </p>
+
+    <div class="mermaid-wrap animate" style="--i:48">
       <div class="zoom-controls">
         <button onclick="zoomDiagram(this, 1.2)" title="Zoom in">+</button>
         <button onclick="zoomDiagram(this, 0.8)" title="Zoom out">&minus;</button>
@@ -717,53 +1016,81 @@
           merge dispatch/task-1 id: "auto-merge"
           commit id: "more work"
           checkout main
-          merge master id: "Opus review"
+          merge master id: "Opus review OK"
       </pre>
     </div>
 
     <div class="roles-grid">
-      <div class="ve-card animate" style="--i:28">
-        <div class="ve-card__label" style="color:var(--green)">main</div>
+      <div class="ve-card animate" style="--i:49">
+        <div class="ve-card__label" style="color:var(--green)">main &mdash; стабильная</div>
         <p style="font-size:13px;color:var(--text-dim)">
-          Stable rollback point. Only Opus merges here after review.
-          Never pushed by Sonnet.
+          Точка отката. Если всё сломалось &mdash; откатываемся на <code>main</code>.
+          Сюда попадает только проверенный код. Только Opus мержит.
         </p>
       </div>
-      <div class="ve-card animate" style="--i:29">
-        <div class="ve-card__label" style="color:var(--orange)">master</div>
+      <div class="ve-card animate" style="--i:50">
+        <div class="ve-card__label" style="color:var(--orange)">master &mdash; рабочая</div>
         <p style="font-size:13px;color:var(--text-dim)">
-          Active work branch. Sonnet auto-merges dispatch/* branches here
-          and pushes to all remotes immediately.
+          Здесь идёт активная работа. Sonnet автоматически мержит свои dispatch-ветки сюда.
+          Пушит сразу в два хранилища: GitHub и Gitea (локальный).
         </p>
       </div>
     </div>
 
-    <div class="callout animate" style="--i:30">
-      <strong>Remotes.</strong> Все проекты имеют remote в Gitea (<code>192.168.0.101:3000</code>).
-      Некоторые также имеют <code>origin</code> (GitHub). Push всегда в оба.
+    <div class="callout callout--orange animate" style="--i:51">
+      <strong>Два хранилища.</strong> Каждый проект имеет remote в Gitea (локальный сервер) и, если нужно, в GitHub.
+      Локальный Gitea &mdash; для скорости и надёжности. Если интернет пропал &mdash; код не потеряется.
     </div>
 
-    <!-- SECTION 7: RULES -->
-    <div id="s7" class="sec-head animate" style="--i:31">7 &mdash; Hard Rules</div>
 
-    <div class="callout callout--red animate" style="--i:32">
-      <strong>No SDD = no dispatch.</strong> Opus пишет SDD первым. Без валидированного SDD Sonnet не запускается.
+    <!-- SECTION 9: RULES -->
+    <div id="s9" class="sec-head animate" style="--i:52">Железные правила</div>
+
+    <p class="desc animate" style="--i:53">
+      Эти правила не рекомендации. Система не работает без них.
+      Каждое появилось после конкретного инцидента.
+    </p>
+
+    <div class="callout callout--red animate" style="--i:54">
+      <strong>Нет SDD &mdash; нет работы.</strong> Opus обязан написать спецификацию до запуска Sonnet.
+      Без контракта исполнитель может сделать что угодно &mdash; и никто не сможет проверить, правильно ли.
     </div>
-    <div class="callout callout--red animate" style="--i:33">
-      <strong>Opus NEVER implements.</strong> Если план конкретный ("file X, change Y") &mdash; spawn Sonnet.
-      Opus не пишет код, не запускает SSH/Docker/deploy, не делает 3+ Bash подряд.
+
+    <div class="callout callout--red animate" style="--i:55">
+      <strong>Opus не пишет код.</strong> Архитектор планирует, исполнитель делает.
+      Если Opus начинает менять файлы руками &mdash; это сигнал, что задача должна быть dispatched.
     </div>
-    <div class="callout callout--red animate" style="--i:34">
-      <strong>Agent "tested" ≠ tested.</strong> После заявления Sonnet о тестировании &mdash; Opus верифицирует
-      тот же тест из своей сессии.
+
+    <div class="callout callout--red animate" style="--i:56">
+      <strong>"Я проверил" &ne; проверено.</strong> Когда Sonnet говорит "тесты прошли" &mdash; Opus перепроверяет.
+      AI может ошибаться, галлюцинировать, или проверить не то.
     </div>
-    <div class="callout animate" style="--i:35">
-      <strong>Skills before dispatch.</strong> Прочитать <code>memory/skills-catalog.md</code>, выбрать 3-5 skills,
-      передать в SDD Environment секцию. Без skills агент работает без доменных знаний.
+
+    <div class="callout animate" style="--i:57">
+      <strong>Skills обязательны.</strong> Перед каждым dispatch Opus подбирает навыки &mdash; файлы с доменными
+      знаниями для конкретной задачи. 80+ навыков: от PostgreSQL до 1С форм.
+      Без skills Sonnet работает вслепую.
     </div>
-    <div class="callout callout--green animate" style="--i:36">
-      <strong>Context management.</strong> &lt;70% &mdash; игнорировать. &gt;85% &mdash; save RLM + предложить /clear.
-      Opus отвечает за контекст, не пользователь.
+
+    <div class="callout callout--green animate" style="--i:58">
+      <strong>Контекст &mdash; ответственность AI.</strong> Не человек должен говорить "сохранись".
+      AI сам следит за размером контекста и сохраняет прогресс в RLM до того, как окно переполнится.
+    </div>
+
+    <div class="callout callout--violet animate" style="--i:59">
+      <strong>Ошибки &mdash; это данные.</strong> Каждый провал dispatch (оценка C или F) сохраняется.
+      При следующем запуске в том же проекте система предупредит агента.
+      Одна и та же ошибка не должна повториться дважды.
+    </div>
+
+
+    <div style="height:40px"></div>
+
+    <div class="ve-card animate" style="--i:60; text-align:center; padding:24px;">
+      <p style="font-size:13px;color:var(--text-dim);line-height:1.7">
+        <strong>Jefest</strong> &mdash; open-source оркестратор для Claude Code.<br>
+        <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim)">dispatch v4 &mdash; 2026-03-05</span>
+      </p>
     </div>
 
     <div style="height:40px"></div>
