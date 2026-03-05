@@ -1,4 +1,5 @@
 from __future__ import annotations
+import asyncio
 import logging
 from mcp.server import Server
 from mcp.server.models import InitializationOptions
@@ -59,7 +60,7 @@ async def handle_call_tool(name: str, arguments: dict) -> list[types.TextContent
     if not fn:
         raise ValueError(f"Unknown tool: {name}")
     import json
-    result = fn(arguments)
+    result = await asyncio.to_thread(fn, arguments)
     return [types.TextContent(type="text", text=json.dumps(result, default=str))]
 
 

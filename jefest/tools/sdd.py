@@ -35,7 +35,10 @@ def create_sdd(
 
 def write_sdd(path: str, content: str) -> dict:
     """Write SDD content to /workspace/{path}."""
-    target = config.WORKSPACE_PATH / path
+    target = (config.WORKSPACE_PATH / path).resolve()
+    workspace = config.WORKSPACE_PATH.resolve()
+    if not target.is_relative_to(workspace):
+        return {"error": "Path traversal detected", "path": path}
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(content, encoding="utf-8")
     return {"written": True, "path": str(target)}
