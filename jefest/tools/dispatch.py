@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import asyncio
-
 from ..config import config
 from ..core.dispatch_runner import DispatchRunner
 from ..core.state_manager import StateManager
@@ -12,10 +10,10 @@ def _get_runner() -> DispatchRunner:
     return DispatchRunner(config, state_manager, rlm_client=None)
 
 
-def dispatch(sdd_path: str, model: str = "sonnet", profile: str = "quality", force: bool = False) -> dict:
+async def dispatch(sdd_path: str, model: str = "sonnet", profile: str = "quality", force: bool = False) -> dict:
     """Dispatch an SDD to a Claude Code agent for execution."""
     runner = _get_runner()
-    report = asyncio.run(runner.run(sdd_path=sdd_path, model=model, force=force))
+    report = await runner.run(sdd_path=sdd_path, model=model, profile=profile, force=force)
     return report.model_dump()
 
 

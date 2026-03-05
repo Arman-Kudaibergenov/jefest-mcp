@@ -60,12 +60,20 @@ def validate_sdd(parsed: dict[str, str]) -> ValidationResult:
     # Check Skills line in Environment section
     env = parsed.get("Environment", "")
     if "Skills:" not in env:
-        warnings.append("No Skills: line found in Environment section")
+        errors.append("No Skills: line in Environment (agent will lack domain knowledge)")
 
     # Check project path exists
     project_path = extract_project_path(parsed)
     if project_path and not Path(project_path).exists():
         warnings.append(f"Project path does not exist: {project_path}")
+
+    if errors:
+        return ValidationResult(
+            valid=False,
+            exit_code=ExitCode.EC_VAL_MISSING_SECTION,
+            errors=errors,
+            warnings=warnings,
+        )
 
     return ValidationResult(
         valid=True,

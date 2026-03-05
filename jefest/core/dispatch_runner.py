@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import re
 import tempfile
 import time
 from pathlib import Path
@@ -30,20 +29,27 @@ def _resolve_model(model: str) -> str:
 
 def _extract_result_json(stdout: str) -> dict[str, Any] | None:
     """Search stdout for a JSON block containing 'status' key."""
-    # Try to find JSON blocks (possibly multiline)
-    for match in re.finditer(r"\{[^{}]*\"status\"[^{}]*\}", stdout, re.DOTALL):
-        try:
-            return json.loads(match.group())
-        except json.JSONDecodeError:
-            pass
-    # Try larger nested blocks
-    for match in re.finditer(r"\{.+?\}", stdout, re.DOTALL):
-        try:
-            data = json.loads(match.group())
-            if "status" in data:
+    lines = stdout.splitlines()
+    # Scan backwards for lines that look like JSON objects
+    for line in reversed(lines):
+        stripped = line.strip()
+        if stripped.startswith("{"):
+            try:
+                decoder = json.JSONDecoder()
+                data, _ = decoder.raw_decode(stripped)
+                if isinstance(data, dict) and "status" in data:
+                    return data
+            except json.JSONDecodeError:
+                pass
+    # Fallback: try full stdout as a single JSON object
+    try:
+        stripped = stdout.strip()
+        if stripped.startswith("{"):
+            data = json.loads(stripped)
+            if isinstance(data, dict) and "status" in data:
                 return data
-        except json.JSONDecodeError:
-            pass
+    except json.JSONDecodeError:
+        pass
     return None
 
 
@@ -58,9 +64,27 @@ class DispatchRunner:
         self,
         sdd_path: str,
         model: str = "sonnet",
+        profile: str = "balanced",
         force: bool = False,
     ) -> DispatchReport:
         start = time.time()
+
+        # Validate sdd_path is within WORKSPACE_PATH (path traversal guard)
+        try:
+            sdd_resolved = Path(sdd_path).resolve()
+            workspace_resolved = self.config.WORKSPACE_PATH.resolve()
+            if not sdd_resolved.is_relative_to(workspace_resolved):
+                return DispatchReport(
+                    dispatch_id="",
+                    status="failed",
+                    escalations=[f"sdd_path outside WORKSPACE_PATH: {sdd_path}"],
+                )
+        except (OSError, ValueError) as e:
+            return DispatchReport(
+                dispatch_id="",
+                status="failed",
+                escalations=[f"sdd_path validation error: {e}"],
+            )
 
         # Parse and validate SDD
         try:
@@ -94,76 +118,81 @@ class DispatchRunner:
         # Assemble system prompt
         prompt_content = self._assemble_prompt(skills_content)
 
-        # Write temp prompt file
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".md", delete=False, encoding="utf-8"
-        ) as f:
-            f.write(prompt_content)
-            prompt_file = f.name
-
         resolved_model = _resolve_model(model)
-        task_message = (
-            f"Read the SDD file first, then follow Atomic Tasks.\n\nSDD: {sdd_path}"
-        )
 
-        cmd = [
-            "claude",
-            "--model", resolved_model,
-            "--system-prompt", prompt_file,
-            "--max-turns", "50",
-            "--no-user-input",
-            "-p", task_message,
-        ]
-
-        log.info("Dispatching %s model=%s cmd=%s", dispatch_id, resolved_model, cmd[0])
+        log.info("Dispatching %s model=%s profile=%s", dispatch_id, resolved_model, profile)
         self.state_manager.update(
             dispatch_id,
             status="running",
-            started_at=__import__("time").strftime("%Y-%m-%dT%H:%M:%SZ", __import__("time").gmtime()),
+            started_at=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         )
 
         stdout_data = ""
         stderr_data = ""
         exit_code = -1
+        prompt_file: str | None = None
 
         try:
-            proc = await asyncio.create_subprocess_exec(
-                *cmd,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
+            # Write temp prompt file inside try block to ensure cleanup
+            with tempfile.NamedTemporaryFile(
+                mode="w", suffix=".md", delete=False, encoding="utf-8"
+            ) as f:
+                f.write(prompt_content)
+                prompt_file = f.name
+
+            task_message = (
+                f"CRITICAL: First read and follow ALL instructions from file '{prompt_file}'. "
+                f"Then execute: Read the SDD file at {sdd_path} and execute ALL steps including Finalize section."
             )
-            self._procs[dispatch_id] = proc
-            self.state_manager.update(dispatch_id, pid=proc.pid)
+
+            cmd = [
+                "claude",
+                "--model", resolved_model,
+                "--max-turns", "50",
+                "--no-user-input",
+                "-p", task_message,
+            ]
 
             try:
-                stdout_bytes, stderr_bytes = await asyncio.wait_for(
-                    proc.communicate(), timeout=DEFAULT_TIMEOUT
+                proc = await asyncio.create_subprocess_exec(
+                    *cmd,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
                 )
-                stdout_data = stdout_bytes.decode(errors="replace")
-                stderr_data = stderr_bytes.decode(errors="replace")
-                exit_code = proc.returncode or 0
-            except asyncio.TimeoutError:
-                proc.kill()
-                await proc.communicate()
-                self.state_manager.update(dispatch_id, status="timeout", finished_at=_now())
+                self._procs[dispatch_id] = proc
+                self.state_manager.update(dispatch_id, pid=proc.pid)
+
+                try:
+                    stdout_bytes, stderr_bytes = await asyncio.wait_for(
+                        proc.communicate(), timeout=DEFAULT_TIMEOUT
+                    )
+                    stdout_data = stdout_bytes.decode(errors="replace")
+                    stderr_data = stderr_bytes.decode(errors="replace")
+                    exit_code = proc.returncode or 0
+                except asyncio.TimeoutError:
+                    proc.kill()
+                    await proc.communicate()
+                    self.state_manager.update(dispatch_id, status="timeout", finished_at=_now())
+                    return DispatchReport(
+                        dispatch_id=dispatch_id,
+                        status="timeout",
+                        escalations=[f"Dispatch timed out after {DEFAULT_TIMEOUT}s"],
+                    )
+            except FileNotFoundError:
+                self.state_manager.update(dispatch_id, status="failed", exit_code=-1, finished_at=_now())
                 return DispatchReport(
                     dispatch_id=dispatch_id,
-                    status="timeout",
-                    escalations=[f"Dispatch timed out after {DEFAULT_TIMEOUT}s"],
+                    status="failed",
+                    tasks_failed=[{"step": "subprocess", "error": "claude CLI not found in PATH"}],
                 )
-        except FileNotFoundError:
-            self.state_manager.update(dispatch_id, status="failed", exit_code=-1, finished_at=_now())
-            return DispatchReport(
-                dispatch_id=dispatch_id,
-                status="failed",
-                tasks_failed=[{"step": "subprocess", "error": "claude CLI not found in PATH"}],
-            )
+            finally:
+                self._procs.pop(dispatch_id, None)
         finally:
-            self._procs.pop(dispatch_id, None)
-            try:
-                Path(prompt_file).unlink()
-            except OSError:
-                pass
+            if prompt_file:
+                try:
+                    Path(prompt_file).unlink()
+                except OSError:
+                    pass
 
         # Parse result JSON from stdout
         result_data = _extract_result_json(stdout_data)
@@ -227,9 +256,18 @@ class DispatchRunner:
 
     def _load_skills(self, skill_names: list[str]) -> str:
         parts: list[str] = []
-        skills_dir = self.config.SKILLS_DIR
+        skills_dir = Path(self.config.SKILLS_DIR).resolve()
+        workspace = Path(self.config.WORKSPACE_PATH).resolve()
         for name in skill_names:
-            skill_file = Path(skills_dir) / name / "SKILL.md"
+            skill_file = (skills_dir / name / "SKILL.md").resolve()
+            # Validate path is within allowed directories
+            try:
+                if not (skill_file.is_relative_to(skills_dir) or skill_file.is_relative_to(workspace)):
+                    log.error("Skill file path outside allowed dirs: %s", skill_file)
+                    continue
+            except ValueError:
+                log.error("Skill file path resolution failed: %s", skill_file)
+                continue
             if skill_file.exists():
                 parts.append(f"### Skill: {name}\n\n{skill_file.read_text(encoding='utf-8')}\n")
             else:
@@ -249,5 +287,4 @@ class DispatchRunner:
 
 
 def _now() -> str:
-    import time
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())

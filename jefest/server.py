@@ -60,7 +60,9 @@ async def handle_call_tool(name: str, arguments: dict) -> list[types.TextContent
     if not fn:
         raise ValueError(f"Unknown tool: {name}")
     import json
-    result = await asyncio.to_thread(fn, arguments)
+    result = fn(arguments)
+    if asyncio.iscoroutine(result):
+        result = await result
     return [types.TextContent(type="text", text=json.dumps(result, default=str))]
 
 
