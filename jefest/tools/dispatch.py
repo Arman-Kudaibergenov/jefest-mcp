@@ -1,13 +1,26 @@
 from __future__ import annotations
 
-_NOT_IMPLEMENTED = {"status": "not_implemented", "message": "Dispatch pipeline coming in next release"}
+import asyncio
+
+from ..config import config
+from ..core.dispatch_runner import DispatchRunner
+from ..core.state_manager import StateManager
+
+
+def _get_runner() -> DispatchRunner:
+    state_manager = StateManager(config.DATA_DIR)
+    return DispatchRunner(config, state_manager, rlm_client=None)
 
 
 def dispatch(sdd_path: str, model: str = "sonnet", profile: str = "quality", force: bool = False) -> dict:
-    """Dispatch an SDD to a Claude Code agent for execution. (Not yet implemented)"""
-    return _NOT_IMPLEMENTED
+    """Dispatch an SDD to a Claude Code agent for execution."""
+    runner = _get_runner()
+    report = asyncio.run(runner.run(sdd_path=sdd_path, model=model, force=force))
+    return report.model_dump()
 
 
 def cancel_dispatch(dispatch_id: str) -> dict:
-    """Cancel a running dispatch by ID. (Not yet implemented)"""
-    return _NOT_IMPLEMENTED
+    """Cancel a running dispatch by ID."""
+    runner = _get_runner()
+    cancelled = asyncio.run(runner.cancel(dispatch_id))
+    return {"cancelled": cancelled, "dispatch_id": dispatch_id}
