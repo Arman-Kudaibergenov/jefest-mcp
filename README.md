@@ -1,53 +1,53 @@
 # Jefest MCP Server
 
-Cross-project orchestrator for Claude Code. Dispatches SDD-based tasks to Sonnet agents across multiple projects. Available as Docker container (MCP server) or standalone PowerShell scripts.
+Кросс-проектный оркестратор для Claude Code. Распределяет задачи на основе SDD-спецификаций между Sonnet-агентами в нескольких проектах. Доступен как Docker-контейнер (MCP-сервер) или набор автономных PowerShell-скриптов.
 
-Apache 2.0 License.
+[English version](README.en.md) | Лицензия Apache 2.0
 
-## Architecture
+## Архитектура
 
 ```
 ┌─────────────────────────────────────────────┐
-│  Opus (planner)                             │
-│  Writes SDD → calls dispatch tool           │
+│  Opus (планировщик)                         │
+│  Пишет SDD → вызывает dispatch              │
 └──────────────┬──────────────────────────────┘
                │ MCP tool call / PowerShell
 ┌──────────────▼──────────────────────────────┐
-│  Jefest (orchestrator)                      │
-│  Validates SDD, injects skills, launches    │
-│  Sonnet agent in project worktree           │
+│  Jefest (оркестратор)                       │
+│  Валидирует SDD, внедряет skills, запускает │
+│  Sonnet-агента в worktree проекта           │
 └──────────────┬──────────────────────────────┘
                │ claude --permission-mode bypassPermissions
 ┌──────────────▼──────────────────────────────┐
-│  Sonnet (executor)                          │
-│  Reads SDD, executes atomic tasks, commits  │
-│  Writes result-<project>.json, /exit        │
+│  Sonnet (исполнитель)                       │
+│  Читает SDD, выполняет задачи, коммитит    │
+│  Пишет result-<project>.json, /exit         │
 └─────────────────────────────────────────────┘
 ```
 
-## Two Modes
+## Два режима работы
 
-| | Docker (MCP Server) | Standalone Scripts |
+| | Docker (MCP-сервер) | Автономные скрипты |
 |---|---|---|
-| Interface | MCP over HTTP | PowerShell CLI |
-| Setup | `docker compose up -d` | Copy scripts |
-| RLM | Embedded | Optional |
-| OS | Linux container | Windows |
-| Best for | Production, CI | Local dev, quick start |
+| Интерфейс | MCP over HTTP | PowerShell CLI |
+| Установка | `docker compose up -d` | Скопировать скрипты |
+| RLM | Встроен | Опционально |
+| ОС | Linux-контейнер | Windows |
+| Подходит для | Продакшн, CI | Локальная разработка |
 
 ---
 
-## Mode 1: Docker (MCP Server)
+## Режим 1: Docker (MCP-сервер)
 
-### Quick Start
+### Быстрый старт
 
 ```bash
 cp .env.example .env
-# Edit .env: set ANTHROPIC_API_KEY and WORKSPACE_PATH
+# Отредактируйте .env: укажите ANTHROPIC_API_KEY и WORKSPACE_PATH
 docker compose up -d
 ```
 
-### Add to Claude Code
+### Подключение к Claude Code
 
 ```json
 {
@@ -59,38 +59,38 @@ docker compose up -d
 }
 ```
 
-### Configuration
+### Конфигурация
 
-| Variable | Default | Description |
+| Переменная | По умолчанию | Описание |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | required | Anthropic API key |
-| `WORKSPACE_PATH` | `./workspace` | Path to your projects |
-| `JEFEST_PORT` | `8300` | Host port for MCP server |
-| `JEFEST_DEFAULT_MODEL` | `sonnet` | Claude model for dispatch |
-| `RLM_EMBEDDING_PROVIDER` | `fastembed` | RLM embedding backend |
+| `ANTHROPIC_API_KEY` | обязательно | API-ключ Anthropic |
+| `WORKSPACE_PATH` | `./workspace` | Путь к вашим проектам |
+| `JEFEST_PORT` | `8300` | Порт MCP-сервера |
+| `JEFEST_DEFAULT_MODEL` | `sonnet` | Модель Claude для диспатча |
+| `RLM_EMBEDDING_PROVIDER` | `fastembed` | Бэкенд эмбеддингов RLM |
 
-### MCP Tools
+### MCP-инструменты
 
-| Tool | Status | Description |
+| Инструмент | Статус | Описание |
 |---|---|---|
-| `health` | stable | Server health + RLM status |
-| `list_skills` | stable | List available skills |
-| `registry_lookup` | stable | Search projects by query |
-| `list_projects` | stable | List all registered projects |
-| `create_sdd` | stable | Generate SDD from template |
-| `write_sdd` | stable | Write SDD to workspace |
-| `dispatch` | stub | Dispatch SDD to agent |
-| `validate_sdd` | stub | Validate SDD format |
-| `get_result` | stub | Get dispatch result |
+| `health` | stable | Здоровье сервера + статус RLM |
+| `list_skills` | stable | Список доступных скиллов |
+| `registry_lookup` | stable | Поиск проектов по запросу |
+| `list_projects` | stable | Список всех проектов |
+| `create_sdd` | stable | Генерация SDD из шаблона |
+| `write_sdd` | stable | Запись SDD в workspace |
+| `dispatch` | stub | Диспатч SDD агенту |
+| `validate_sdd` | stub | Валидация формата SDD |
+| `get_result` | stub | Получение результата диспатча |
 
-### Custom Registry
+### Свой реестр проектов
 
 ```bash
 cp registry.yaml.example workspace/registry.yaml
-# Add your projects
+# Добавьте свои проекты
 ```
 
-### Custom Skills
+### Свои скиллы
 
 ```yaml
 # docker-compose.yml
@@ -100,120 +100,120 @@ volumes:
 
 ---
 
-## Mode 2: Standalone Scripts
+## Режим 2: Автономные скрипты
 
-For users who don't want Docker. Pure PowerShell, no server required.
+Для тех, кому не нужен Docker. Чистый PowerShell, без сервера.
 
-### Requirements
+### Требования
 
 - Windows, PowerShell 5.1+
 - [Claude Code CLI](https://github.com/anthropics/claude-code)
 - Git
-- Windows Terminal (optional)
+- Windows Terminal (опционально)
 
-### Setup
+### Установка
 
 ```powershell
-# Copy standalone scripts to a convenient location
+# Скопируйте скрипты в удобное место
 Copy-Item -Recurse standalone/ C:/tools/jefest/
 ```
 
-### Write an SDD
+### Написание SDD
 
 ```powershell
 Copy-Item C:/tools/jefest/sdd-template.md myproject/openspec/specs/my-task-20260305.md
-# Fill in: Context, Atomic Tasks, Acceptance, Finalize
+# Заполните: Context, Atomic Tasks, Acceptance, Finalize
 ```
 
-Finalize section must include result-JSON step and `/exit`.
+Секция Finalize должна содержать шаг записи result-JSON и `/exit`.
 
-### Validate + Dispatch
+### Валидация и диспатч
 
 ```powershell
-# Structural check
+# Структурная проверка
 ./standalone/validate-sdd.ps1 -SddPath myproject/openspec/specs/my-task.md
 
-# Launch agent
+# Запуск агента
 ./standalone/dispatch-lite.ps1 -ProjectPath C:/workspace/myproject -SddPath myproject/openspec/specs/my-task.md
 ```
 
-### Options
+### Параметры
 
 ```
--Model haiku|sonnet|opus    Claude model (default: sonnet)
--Profile budget|balanced    budget forces haiku model
--Force                      skip validation, override lock
--NewProject                 allow non-existent ProjectPath
+-Model haiku|sonnet|opus    Модель Claude (по умолчанию: sonnet)
+-Profile budget|balanced    budget форсирует модель haiku
+-Force                      пропустить валидацию, обойти блокировку
+-NewProject                 разрешить несуществующий ProjectPath
 ```
 
-### Monitor Results
+### Мониторинг результатов
 
 ```powershell
-# Result written by agent at completion
+# Результат, записанный агентом по завершении
 Get-Content $env:TEMP/jefest-dispatch/result-myproject.json | ConvertFrom-Json
 
-# Structural completion check
+# Структурная проверка выполнения
 ./standalone/verify-completion.ps1 -SddPath ... -ProjectPath ...
 ```
 
 ---
 
-## Skills System
+## Система скиллов
 
-Skills inject domain knowledge into the agent system prompt. Reference them in the SDD:
+Скиллы внедряют доменные знания в системный промпт агента. Укажите их в SDD:
 
 ```markdown
 ## Environment
 - Skills: docker-expert, python-patterns, testing-patterns
 ```
 
-Skills are loaded from:
-1. `~/.claude/skills/<skill-name>/SKILL.md` (global)
-2. `<project>/.claude/skills/<skill-name>/SKILL.md` (project-local)
+Скиллы загружаются из:
+1. `~/.claude/skills/<skill-name>/SKILL.md` (глобальные)
+2. `<project>/.claude/skills/<skill-name>/SKILL.md` (проектные)
 
-Built-in skills in this repo (`skills/` directory):
-- `docker-expert` — Docker on Proxmox/Linux
-- `powershell-windows` — PowerShell patterns
-- `workflow-automation` — CI/CD and automation
-- `python-patterns` — Python infrastructure scripts
-- `testing-patterns` — Unit/integration testing
-- `security-audit` — OWASP security review
-- `api-expert` — REST/GraphQL API design
+Встроенные скиллы (`skills/`):
+- `docker-expert` — Docker на Proxmox/Linux
+- `powershell-windows` — паттерны PowerShell
+- `workflow-automation` — CI/CD и автоматизация
+- `python-patterns` — Python для инфраструктуры
+- `testing-patterns` — юнит- и интеграционное тестирование
+- `security-audit` — аудит безопасности (OWASP)
+- `api-expert` — проектирование REST/GraphQL API
 
-For 1C-specific skills, see [1c-ai-development-kit](https://github.com/anthropics/claude-code).
+Скиллы для 1С — см. [1c-ai-development-kit](https://github.com/Arman-Kudaibergenov/1c-ai-development-kit).
 
 ---
 
-## SDD Format
+## Формат SDD
 
-SDD (Software Design Document) is the contract between planner and executor.
+SDD (Software Design Document) — контракт между планировщиком и исполнителем.
 
 ```markdown
-# SDD: <title>
+# SDD: <название>
 
 ## Context
 ## Environment
-- Project: <name>, path: <path>
+- Project: <имя>, path: <путь>
 - Skills: skill1, skill2
 
 ## Atomic Tasks
-1. Create worktree: git worktree add ...
+1. Создать worktree: git worktree add ...
 2. ...
 
 ## Acceptance
-- Verifiable condition
+- Проверяемое условие
 
 ## Finalize
-1. Commit + push
-2. Write result-JSON
+1. Коммит + пуш
+2. Записать result-JSON
 3. /exit
 ```
 
-See `standalone/sdd-template.md` for full template.
+Полный шаблон: `standalone/sdd-template.md`.
 
 ---
 
-## Development
+## Разработка
 
 ```bash
 pip install -e .
@@ -222,6 +222,6 @@ python -m jefest.server
 
 ---
 
-## License
+## Лицензия
 
-Apache 2.0. See [LICENSE](LICENSE).
+Apache 2.0. См. [LICENSE](LICENSE).
