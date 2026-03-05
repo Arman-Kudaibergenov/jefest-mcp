@@ -1,0 +1,23 @@
+services:
+  jefest:
+    build: .
+    container_name: jefest-mcp
+    restart: unless-stopped
+    ports:
+      - "${JEFEST_PORT:-8300}:8300"
+    volumes:
+      - ${WORKSPACE_PATH:-./workspace}:/workspace
+      - jefest-data:/data
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - JEFEST_REGISTRY=${JEFEST_REGISTRY:-/workspace/registry.yaml}
+      - JEFEST_DEFAULT_MODEL=${JEFEST_DEFAULT_MODEL:-sonnet}
+      - RLM_EMBEDDING_PROVIDER=${RLM_EMBEDDING_PROVIDER:-fastembed}
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 4G
+
+volumes:
+  jefest-data:

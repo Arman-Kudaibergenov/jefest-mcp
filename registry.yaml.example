@@ -1,0 +1,15 @@
+projects:
+  my-webapp:
+    path: /workspace/my-webapp
+    type: nodejs
+    role: Web application
+    default_skills:
+      - api-expert
+      - testing-patterns
+  my-api:
+    path: /workspace/my-api
+    type: python
+    role: Backend API
+    default_skills:
+      - python-patterns
+      - postgres-expert
